@@ -6,11 +6,27 @@ jobs:
   web:
     runs-on: ubuntu-latest
 
+    services:
+      db:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: pro_role
+          POSTGRES_PASSWORD: mypassword
+          POSTGRES_DB: myappdb
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd "pg_isready -U pro_role"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
-      DATABASE_URL: sqlite:///./test.db
+      DATABASE_URL: postgresql://pro_role:mypassword@localhost:5432/myappdb
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
